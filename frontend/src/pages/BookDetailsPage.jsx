@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { booksAPI } from "../services/api"
-import { Star, Minus, Plus, ShoppingCart, ArrowLeft } from "lucide-react"
+import { Star, Minus, Plus, ShoppingCart, ArrowLeft, CreditCard } from "lucide-react"
 
 function BookDetailsPage({ onAddToCart }) {
   const { id } = useParams()
@@ -69,6 +69,15 @@ function BookDetailsPage({ onAddToCart }) {
     }
   }
 
+  const handleBuyNow = async () => {
+    try {
+      await onAddToCart({ ...book, quantity })
+      navigate("/cart")
+    } catch (error) {
+      console.error("Error adding to cart:", error)
+    }
+  }
+
   const decrementQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1)
   }
@@ -90,7 +99,7 @@ function BookDetailsPage({ onAddToCart }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
           <div className="lg:col-span-1">
-            <div className="sticky top-20 bg-gray-100 rounded-lg overflow-hidden">
+            <div className="sticky top-20 bg-gray-100 rounded-lg overflow-hidden relative">
               <img src={book.image || "/placeholder.svg"} alt={book.title} className="w-full h-auto object-cover" />
               {book.discount && (
                 <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded font-bold">
@@ -160,8 +169,8 @@ function BookDetailsPage({ onAddToCart }) {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center border border-gray-300 rounded-lg">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center border border-gray-300 rounded-lg w-fit">
                 <button onClick={decrementQuantity} className="p-2 hover:bg-gray-100 transition-colors">
                   <Minus size={20} className="text-gray-600" />
                 </button>
@@ -171,13 +180,23 @@ function BookDetailsPage({ onAddToCart }) {
                 </button>
               </div>
 
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 font-bold text-lg"
-              >
-                <ShoppingCart size={24} />
-                Add to Cart
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={handleBuyNow}
+                  className="flex-1 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-bold text-lg"
+                >
+                  <CreditCard size={24} />
+                  Buy Now
+                </button>
+
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 font-bold text-lg"
+                >
+                  <ShoppingCart size={24} />
+                  Add to Cart
+                </button>
+              </div>
             </div>
 
             {addedToCart && (
